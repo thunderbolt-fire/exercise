@@ -1,9 +1,10 @@
 package com.example.exercise;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View; // 非常重要使用这个接收View对象
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +52,7 @@ public class UserCenterActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.tv_personal_info).setOnClickListener(this);
         findViewById(R.id.tv_favorites).setOnClickListener(this);
         findViewById(R.id.tv_history).setOnClickListener(this);
+        findViewById(R.id.tv_weather).setOnClickListener(this); // 为天气预报条目设置点击监听器
         findViewById(R.id.tv_settings).setOnClickListener(this);
         findViewById(R.id.tv_about_us).setOnClickListener(this);
         findViewById(R.id.tv_feedback).setOnClickListener(this);
@@ -70,6 +72,10 @@ public class UserCenterActivity extends AppCompatActivity implements View.OnClic
             Toast.makeText(this, "我的收藏", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.tv_history) {
             Toast.makeText(this, "浏览历史", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.tv_weather) {
+            // 当天气预报条目被点击时，启动WeatherActivity
+            Intent intent = new Intent(this, WeatherActivity.class);
+            startActivity(intent);
         } else if (id == R.id.tv_settings) {
             Toast.makeText(this, "设置", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.tv_about_us) {
