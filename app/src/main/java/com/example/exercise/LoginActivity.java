@@ -47,6 +47,10 @@ public class LoginActivity extends AppCompatActivity {
         btnWechatLogin = findViewById(R.id.btn_wechat_login);
         btnAppleLogin = findViewById(R.id.btn_apple_login);
 
+        // 将默认的用户名和密码设置到输入框中
+        etEmail.setText("test@example.com");
+        etPassword.setText("123456");
+
         // 为登录按钮设置点击监听器
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
