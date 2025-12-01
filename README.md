@@ -90,7 +90,8 @@
 
 ### 2. 显示页面问题
 
-应该为：![img_1.png](img_1.png)
+应该为：
+![img_1.png](img_1.png)
 
 实际为：
 ![img.png](img.png)
@@ -113,5 +114,7 @@
 
 登录界面：
 ![img_2.png](img_2.png)
+
+
 个人中心界面：
 ![img_3.png](img_3.png)
