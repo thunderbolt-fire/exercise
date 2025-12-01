@@ -21,6 +21,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+/**
+ * WeatherActivity 负责展示当前天气和未来预报，支持在两个界面间切换。
+ */
 public class WeatherActivity extends AppCompatActivity {
 
     private TextView tvCity, tvWeatherStatus, tvTemperature, tvTempHighLow;
@@ -34,17 +37,22 @@ public class WeatherActivity extends AppCompatActivity {
     private Button btnShowForecast;
     private TextView tvFutureCity;
 
+    /** OkHttp 客户端实例，用于执行网络请求 */
     private final OkHttpClient client = new OkHttpClient();
+    /** Gson 实例，将 JSON 字符串转换为 WeatherResponse 对象 */
     private final Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
-        initViews();
-        fetchWeatherData();
+        initViews(); // 绑定控件并初始化列表
+        fetchWeatherData(); // 调起网络请求，获取天气数据
     }
 
+    /**
+     * 查找并缓存页面中的所有控件，同时设置 RecyclerView 与按钮监听。
+     */
     private void initViews() {
         tvCity = findViewById(R.id.tv_city);
         tvWeatherStatus = findViewById(R.id.tv_weather_status);
@@ -68,12 +76,18 @@ public class WeatherActivity extends AppCompatActivity {
         setupTabs();
     }
 
+    /**
+     * 初始化底部切换按钮，默认显示当前天气。
+     */
     private void setupTabs() {
         btnShowCurrent.setOnClickListener(v -> switchTab(true));
         btnShowForecast.setOnClickListener(v -> switchTab(false));
         switchTab(true);
     }
 
+    /**
+     * 根据参数显示对应的布局，并更新按钮的可用状态来模拟选中效果。
+     */
     private void switchTab(boolean showCurrent) {
         layoutCurrent.setVisibility(showCurrent ? View.VISIBLE : View.GONE);
         layoutForecast.setVisibility(showCurrent ? View.GONE : View.VISIBLE);
@@ -81,6 +95,9 @@ public class WeatherActivity extends AppCompatActivity {
         btnShowForecast.setEnabled(showCurrent);
     }
 
+    /**
+     * 向高德天气接口发起异步请求，获取城市的实时及未来天气数据。
+     */
     private void fetchWeatherData() {
         Request request = new Request.Builder()
                 .url("https://restapi.amap.com/v3/weather/weatherInfo?city=610100&extensions=all&&key=78437de757a2693c3f9cb2aabf6f25fd")
@@ -104,23 +121,32 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * 将接口返回的数据渲染到界面。
+     * @param weatherResponse 解析好的天气实体，可能为 null。
+     */
     private void updateUi(WeatherResponse weatherResponse) {
         if (weatherResponse != null && weatherResponse.getForecasts() != null && !weatherResponse.getForecasts().isEmpty()) {
             WeatherResponse.Forecast forecast = weatherResponse.getForecasts().get(0);
             if (forecast != null && forecast.getCasts() != null && !forecast.getCasts().isEmpty()) {
                 WeatherResponse.Cast today = forecast.getCasts().get(0);
+                // 顶部城市与温度信息
                 tvCity.setText(forecast.getCity());
                 tvWeatherStatus.setText(today.getDayweather());
                 tvTemperature.setText(String.format("%s°", today.getDaytemp()));
                 tvTempHighLow.setText(String.format("最高: %s° 最低: %s°", today.getDaytemp(), today.getNighttemp()));
 
+                // 白天卡片
                 tvDayWeather.setText(today.getDayweather());
                 tvDayTemp.setText(String.format("%s°", today.getDaytemp()));
                 tvDayWind.setText(String.format("%s %s级", today.getDaywind(), today.getDaypower()));
 
+                // 夜间卡片
                 tvNightWeather.setText(today.getNightweather());
                 tvNightTemp.setText(String.format("%s°", today.getNighttemp()));
                 tvNightWind.setText(String.format("%s %s级", today.getNightwind(), today.getNightpower()));
+
+                // 未来预报列表
                 tvFutureCity.setText(forecast.getCity());
                 if (forecast.getCasts().size() > 1) {
                     futureForecastAdapter.submitData(forecast.getCasts().subList(1, forecast.getCasts().size()));
