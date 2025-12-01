@@ -1,11 +1,15 @@
 package com.example.exercise;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 
@@ -22,6 +26,13 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView tvCity, tvWeatherStatus, tvTemperature, tvTempHighLow;
     private TextView tvDayWeather, tvDayTemp, tvDayWind;
     private TextView tvNightWeather, tvNightTemp, tvNightWind;
+    private RecyclerView rvFutureForecast;
+    private FutureForecastAdapter futureForecastAdapter;
+    private View layoutCurrent;
+    private View layoutForecast;
+    private Button btnShowCurrent;
+    private Button btnShowForecast;
+    private TextView tvFutureCity;
 
     private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
@@ -45,11 +56,34 @@ public class WeatherActivity extends AppCompatActivity {
         tvNightWeather = findViewById(R.id.tv_night_weather);
         tvNightTemp = findViewById(R.id.tv_night_temp);
         tvNightWind = findViewById(R.id.tv_night_wind);
+        layoutCurrent = findViewById(R.id.layout_current);
+        layoutForecast = findViewById(R.id.layout_forecast);
+        btnShowCurrent = findViewById(R.id.btn_show_current);
+        btnShowForecast = findViewById(R.id.btn_show_forecast);
+        tvFutureCity = findViewById(R.id.tv_future_city);
+        rvFutureForecast = findViewById(R.id.rv_future_forecast);
+        futureForecastAdapter = new FutureForecastAdapter();
+        rvFutureForecast.setLayoutManager(new LinearLayoutManager(this));
+        rvFutureForecast.setAdapter(futureForecastAdapter);
+        setupTabs();
+    }
+
+    private void setupTabs() {
+        btnShowCurrent.setOnClickListener(v -> switchTab(true));
+        btnShowForecast.setOnClickListener(v -> switchTab(false));
+        switchTab(true);
+    }
+
+    private void switchTab(boolean showCurrent) {
+        layoutCurrent.setVisibility(showCurrent ? View.VISIBLE : View.GONE);
+        layoutForecast.setVisibility(showCurrent ? View.GONE : View.VISIBLE);
+        btnShowCurrent.setEnabled(!showCurrent);
+        btnShowForecast.setEnabled(showCurrent);
     }
 
     private void fetchWeatherData() {
         Request request = new Request.Builder()
-                .url("https://restapi.amap.com/v3/weather/weatherInfo?city=110101&extensions=all&&key=78437de757a2693c3f9cb2aabf6f25fd")
+                .url("https://restapi.amap.com/v3/weather/weatherInfo?city=610100&extensions=all&&key=78437de757a2693c3f9cb2aabf6f25fd")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -87,6 +121,12 @@ public class WeatherActivity extends AppCompatActivity {
                 tvNightWeather.setText(today.getNightweather());
                 tvNightTemp.setText(String.format("%s°", today.getNighttemp()));
                 tvNightWind.setText(String.format("%s %s级", today.getNightwind(), today.getNightpower()));
+                tvFutureCity.setText(forecast.getCity());
+                if (forecast.getCasts().size() > 1) {
+                    futureForecastAdapter.submitData(forecast.getCasts().subList(1, forecast.getCasts().size()));
+                } else {
+                    futureForecastAdapter.submitData(null);
+                }
             }
         }
     }

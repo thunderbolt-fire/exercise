@@ -42,6 +42,7 @@ public class WeatherResponse {
         private String nightpower;
 
         public String getDate() { return date; }
+        public String getWeek() { return week; }
         public String getDayweather() { return dayweather; }
         public String getNightweather() { return nightweather; }
         public String getDaytemp() { return daytemp; }
