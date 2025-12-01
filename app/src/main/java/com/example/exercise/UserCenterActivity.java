@@ -3,7 +3,7 @@ package com.example.exercise;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
+import android.view.View; // 非常重要使用这个接收View对象
 import android.widget.TextView;
 import android.widget.Toast;
 
