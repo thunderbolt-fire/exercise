@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ public class UserCenterActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.tv_settings).setOnClickListener(this);
         findViewById(R.id.tv_about_us).setOnClickListener(this);
         findViewById(R.id.tv_feedback).setOnClickListener(this);
+        findViewById(R.id.btn_simulate_anr).setOnClickListener(this);
 
         FluencyMonitor.getInstance().start(fps -> {
             tvFps.setText(String.format("FPS: %d", fps));
@@ -66,6 +68,8 @@ public class UserCenterActivity extends AppCompatActivity implements View.OnClic
             Toast.makeText(this, "关于我们", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.tv_feedback) {
             Toast.makeText(this, "意见反馈", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.btn_simulate_anr) {
+            SystemClock.sleep(10000); // Block main thread for 10 seconds to trigger ANR
         }
     }
 
