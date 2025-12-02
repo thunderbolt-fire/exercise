@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Exercise" >
         <activity
-            android:name=".LoginActivity"
+            android:name=".MainActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,9 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserCenterActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".WeatherActivity" />
+        <activity android:name=".ui.activity.LoginActivity" />
+        <activity android:name=".ui.activity.UserCenterActivity" />
+        <activity android:name=".ui.activity.WeatherActivity" />
     </application>
 
 </manifest>

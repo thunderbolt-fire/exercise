@@ -1,4 +1,4 @@
-package com.example.exercise;
+package com.example.exercise.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +10,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.exercise.fluencysdk.FluencyMonitor;
+import com.example.exercise.R;
+import com.example.exercise.sdk.FluencyMonitor;
 
 public class UserCenterActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -81,5 +82,6 @@ public class UserCenterActivity extends AppCompatActivity implements View.OnClic
     protected void onDestroy() {
         super.onDestroy();
         FluencyMonitor.getInstance().stop();
+        FluencyMonitor.getInstance().generateReport();
     }
 }

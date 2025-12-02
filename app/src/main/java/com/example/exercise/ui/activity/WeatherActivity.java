@@ -1,4 +1,4 @@
-package com.example.exercise;
+package com.example.exercise.ui.activity;
 
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +12,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.exercise.R;
+import com.example.exercise.data.model.WeatherResponse;
+import com.example.exercise.ui.adapter.FutureForecastAdapter;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -29,6 +32,7 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView tvDayWeather, tvDayTemp, tvDayWind;
     private TextView tvNightWeather, tvNightTemp, tvNightWind;
     private RecyclerView rvFutureForecast;
+
     private FutureForecastAdapter futureForecastAdapter;
     private View layoutCurrent;
     private View layoutForecast;
