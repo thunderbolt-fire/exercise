@@ -1,7 +1,6 @@
+# Exercise App - 登录、个人中心与性能监控
 
-# Exercise App - 登录与个人中心
-
-这是一个基础的 Android 应用程序，旨在演示用户登录和个人中心页面的核心功能。应用遵循了现代 Android 开发的基本实践。
+这是一个基础的 Android 应用程序，旨在演示用户登录、个人中心页面的以及天气预报展示的核心功能，并集成了客户端性能监控SDK。应用遵循了现代 Android 开发的基本实践，并采用分层架构以提升代码的可维护性。
 
 ## 功能列表
 
@@ -10,13 +9,26 @@
   - 启动时在输入框中显示默认的测试凭据。
   - 实现登录按钮，点击后验证用户凭据。
   - 登录成功后，跳转到个人中心页面。
-  - 包含UI精美的微信和 Apple 第三方登录按钮（仅实现UI和点击提示）（使用课堂中给的图片）。
+  - 包含UI精美的微信和 Apple 第三方登录按钮（仅实现UI和点击提示）。
 
 - **个人中心页面**:
   - 以圆形样式显示用户头像。
   - 显示用户名和个性签名。
-  - 包含“个人信息”、“我的收藏”、“浏览历史”等多个可点击的列表项。
-  - 点击列表项后，会弹出 Toast 提示。
+  - 包含“个人信息”、“我的收藏”、“天气预报”等多个可点击的列表项。
+
+- **天气预报页面**:
+  - 从高德天气API异步获取并展示实时天气与未来预报。
+  - 根据天气状况（晴、雨、多云等）动态更换页面背景。
+  - 实现了“当前天气”与“未来预报”的标签页切换功能。
+
+- **客户端性能监控SDK**:
+  - **流畅性监控 (FPS)**:
+    - 在个人中心页面实时显示当前页面的帧率（FPS）。
+    - 监控结束时，可在Logcat中生成一份包含**平均/最低帧率**和**高卡顿次数**的性能报告。
+  - **ANR（应用无响应）监控**:
+    - 应用启动时自动开启ANR监控。
+    - 在个人中心页面提供“模拟ANR”按钮，用于测试和触发ANR。
+    - 成功捕获ANR后，可在Logcat中生成一份包含**主线程堆栈信息**的诊断报告。
 
 - **数据持久化**:
   - **SQLite**: 用于存储和验证用户的账号和密码。应用启动时，会在数据库中预埋一个默认用户。
@@ -24,56 +36,41 @@
 
 ## 项目文件结构解析
 
-本项目的核心代码和资源主要分布在 `app/src/main` 目录下。以下是关键文件和目录的详细说明：
+本项目在重构后遵循了清晰的分层架构，将不同职责的代码分离到独立的包中，极大地提升了可读性和可维护性。
 
 ### 1. Java 源代码 (`app/src/main/java/com/example/exercise/`)
 
--   **`LoginActivity.java`**: **登录页面控制器**。
-    -   负责管理 `activity_login.xml` 布局的交互逻辑。
-    -   初始化 UI 控件，并将默认的测试账号和密码填充到输入框中。
-    -   设置“登录”按钮的点击事件，调用 `UserDatabaseHelper` 来验证用户凭据。
-    -   验证成功后，使用 `Intent` 启动 `UserCenterActivity`。
-    -   为第三方登录按钮提供点击提示。
-
--   **`UserCenterActivity.java`**: **个人中心页面控制器**。
-    -   负责管理 `activity_user_center.xml` 布局。
-    -   使用 `SharedPreferences` 来读取和显示用户的名称和签名。
-    -   实现了 `View.OnClickListener` 接口，统一处理页面上所有条目的点击事件，并弹出 `Toast` 提示。
-    -   在 `onPause`生命周期方法中，将用户可能修改的信息保存回 `SharedPreferences`。
-
--   **`UserDatabaseHelper.java`**: **数据库管理核心**。
-    -   继承自 `SQLiteOpenHelper`，封装了所有与数据库相关的操作。
-    -   在 `onCreate` 方法中创建 `user` 表，并**仅在首次创建时**插入一条默认的用户记录。这是确保默认用户数据稳定性的关键。
-    -   实现了 `onUpgrade` 方法，用于在数据库版本更新时删除旧表并重建，有效解决了开发过程中的数据污染问题。
-    -   提供了 `checkUser(email, password)` 方法，用于验证登录凭据。
-
--   **`User.java`**: **用户数据模型**。
-    -   一个简单的 POJO (Plain Old Java Object)，用于封装用户的数据（邮箱和密码），使代码结构更清晰。
-
 -   **`MainActivity.java`**: **应用启动器**。
-    -   作为应用的初始入口点，但其唯一功能是立即启动 `LoginActivity` 并关闭自身，确保用户流程的正确性。
+    - 作为应用的唯一入口，负责初始化全局服务（如`AnrMonitor`），然后立即重定向到`LoginActivity`。
 
-### 2. 布局文件 (`app/src/main/res/layout/`)
+-   **`sdk/`**: **客户端性能监控SDK包**。
+    -   **`FluencyMonitor.java`**: **流畅性监控核心**。使用`Choreographer` API来精确计算并回调实时FPS，同时具备性能报告生成能力。
+    -   **`AnrMonitor.java`**: **ANR监控核心**。采用“看门狗”方案，通过一个后台线程监控主线程的响应状态，以捕获并报告ANR事件。
 
--   **`activity_login.xml`**: 定义了登录页面的全部 UI 元素。
-    -   使用 `ConstraintLayout` 进行整体布局。
-    -   采用 `com.google.android.material.textfield.TextInputLayout` 实现了带有图标和密码可见性切换功能的现代化输入框。
-    -   第三方登录按钮通过 `LinearLayout` 嵌套 `ImageView` 和 `TextView` 来实现，以精确控制图标大小。
+-   **`ui/`**: **UI层**，包含所有与用户界面相关的代码。
+    -   **`activity/`**: 存放所有的Activity。
+        -   `LoginActivity.java`: 登录页面控制器。
+        -   `UserCenterActivity.java`: 个人中心页面控制器，同时也是SDK功能的集成和测试页面。
+        -   `WeatherActivity.java`: 天气预报页面控制器。
+    -   **`adapter/`**: 存放RecyclerView的适配器。
+        -   `FutureForecastAdapter.java`: 用于展示未来天气预报的列表。
 
--   **`activity_user_center.xml`**: 定义了个人中心页面的 UI。
-    -   顶部使用一个 `View` 来创建蓝色背景。
-    -   通过 `LinearLayout` 纵向排列了多个 `TextView`，每个条目都包含图标和向右的箭头。
+-   **`data/`**: **数据层**，包含所有数据处理、存储和模型相关的代码。
+    -   **`UserDatabaseHelper.java`**: **数据库管理核心**。封装了所有与用户SQLite数据库相关的操作。
+    -   **`model/`**: 存放所有的POJO数据模型。
+        -   `User.java`: 用户数据模型。
+        -   `WeatherResponse.java`: 用于Gson解析的天气API响应模型。
 
-### 3. Drawable 资源 (`app/src/main/res/drawable/`)
+### 2. 布局与资源文件
 
--   **背景资源 (XML)**: 如 `edit_text_background.xml` 和 `login_button_background.xml`，使用 Shape Drawable 定义了 UI 控件（输入框、按钮）的圆角、背景色和边框样式。
--   **图标资源 (PNG & XML)**: 包含应用中使用的所有图标，如 `ic_email.xml` (矢量图) 和 `wechat.png` (位图)。
+-   **布局文件 (`layout/`)**: 定义了所有Activity和列表项的UI结构。
+-   **Drawable 资源 (`drawable/`)**: 包含图标、自定义形状背景等。
+    - 新增了`weather_background_sunny.xml`等多个文件，用于实现天气页面的动态背景。
 
-### 4. 应用清单文件 (`app/src/main/AndroidManifest.xml`)
+### 3. 应用清单文件 (`AndroidManifest.xml`)
 
--   这是应用的“户口本”，至关重要。
--   声明了应用所需的所有 `Activity`（`MainActivity`, `LoginActivity`, `UserCenterActivity`）。**（开发过程中的一个关键修复点）**
--   通过 `<intent-filter>` 将 `LoginActivity` 设置为 `LAUNCHER` Activity，使其成为应用的启动页面。
+-   注册了应用中所有的Activity，并明确指定了它们在重构后的新包路径（如`.ui.activity.UserCenterActivity`）。
+-   通过`<intent-filter>`将`MainActivity`设置为应用的启动入口。
 
 ## 开发过程中的挑战与解决方案
 
@@ -90,10 +87,10 @@
 
 ### 2. 显示页面问题
 
-应该为：![img_1.png](img_1.png)
+应该为：![img_1.png](imgs/img_1.png)
 
 实际为：
-![img.png](img.png)
+![img.png](imgs/img.png)
 
 - **问题描述**: 登录界面在运行时和预览的不一致。
 
@@ -109,9 +106,30 @@
   2. **Gradle缓存损坏**: 即使修复了空文件，构建依然失败，并提示“This is an internal error in the incremental builds code”。这表明 Gradle 的增量构建缓存已损坏。我通过执行 `gradle clean` 和 `gradle sync`，并最终指导用户使用 Android Studio 的 **"Invalidate Caches / Restart"** 功能，彻底清除了损坏的缓存，解决了这个问题。
   3. **资源名称重复**: 最后，我遇到了“Duplicate resources”错误。这是因为我创建的 `apple.xml` 和 `wechat.xml` 与项目中已存在的 `apple.png` 和 `wechat.png` 文件名冲突。在 Android 中，同一类型的资源（如 drawable）名称必须唯一。我通过删除后创建的 `.xml` 文件，解决了这个冲突。
 
+### 4. 客户端SDK的开发与集成
+
+- **问题描述**: 在开发性能监控SDK时，遇到了从编译、运行到功能实现的一系列挑战。
+
+- **排查与解决**:
+  1.  **模块化方案选择**: 最初尝试将SDK创建为一个独立的Gradle模块，但遇到了大量复杂的构建错误（如“找不到符号”、“未配置动态功能”等）。最终，我放弃了这种高成本的方案，转而在主应用内部通过创建`sdk`文件夹来组织代码。这种“代码内模块化”的方案被证明是本项目中最有效、最直接的解决方案。
+  2.  **ANR监控方案演进**: 初版的ANR监控采用“通过`logcat`捕获`SIGQUIT`信号”的方案，但这因Android新版本的权限限制而失效。我废弃了该方案，并重新设计和实现了业界标准的**“看门狗”（Watchdog）方案**，通过后台线程监控主线程响应状态，最终稳定、可靠地实现了ANR的捕获。
+  3.  **UI遮挡问题**: 在集成了FPS监控后，发现FPS数据无法显示。经排查，原因是XML布局中，显示FPS的`TextView`被上层的其他视图遮挡。通过调整`TextView`在XML文件中的位置，并为其添加`android:elevation`属性以提升其Z轴高度，成功解决了该问题。
+
 ## 最终效果
 
 登录界面：
-![img_2.png](img_2.png)
-个人中心界面：
-![img_3.png](img_3.png)
+![img_2.png](imgs/img_2.png)
+
+个人中心界面（集成了FPS监控）：
+![img_4.png](imgs/img_4.png)
+
+天气预报界面：
+![img_5.png](imgs/img_5.png)
+
+![img_6.png](imgs/img_6.png)
+
+FluencyReport：
+![img_8.png](imgs/img_8.png)
+
+AnrReport：
+![img_7.png](imgs/img_7.png)
