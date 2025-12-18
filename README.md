@@ -2,6 +2,52 @@
 
 这是一个基础的 Android 应用程序，旨在演示用户登录、个人中心页面的以及天气预报展示的核心功能，并集成了客户端性能监控SDK。应用遵循了现代 Android 开发的基本实践，并采用分层架构以提升代码的可维护性。
 
+## 📚 项目文档
+
+本项目提供了完整的文档体系，帮助您快速理解和上手：
+
+- **[README.md](README.md)** - 项目概述和功能说明（本文档）
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - 详细的架构设计文档，包括技术栈、分层架构、设计模式等
+- **[API.md](API.md)** - 完整的 API 文档，包括外部 API 和内部 SDK API 使用说明
+- **[DEVELOPMENT.md](DEVELOPMENT.md)** - 开发指南，包括环境搭建、构建、调试、代码规范等
+
+## 🚀 快速开始
+
+### 环境要求
+
+- Android Studio Hedgehog (2023.1.1) 或更高版本
+- JDK 11 或更高版本
+- Android SDK API 23 (Android 6.0) 或更高
+
+### 克隆并运行
+
+```bash
+# 克隆项目
+git clone https://github.com/thunderbolt-fire/exercise.git
+cd exercise
+
+# 使用 Android Studio 打开项目
+# File → Open → 选择项目目录
+
+# 等待 Gradle 同步完成后，点击运行按钮（绿色三角）
+```
+
+### 测试账号
+
+应用内置了测试账号，可以直接登录：
+
+- **邮箱**: `test@example.com`
+- **密码**: `123456`
+
+### 主要功能体验
+
+1. **登录** → 使用测试账号登录
+2. **个人中心** → 查看实时 FPS 显示
+3. **天气预报** → 点击"天气预报"查看天气信息
+4. **ANR 测试** → 点击"模拟 ANR"按钮，查看 Logcat 输出
+
+详细的开发和使用说明请参考 [DEVELOPMENT.md](DEVELOPMENT.md)。
+
 ## 功能列表
 
 - **用户登录页面**:
