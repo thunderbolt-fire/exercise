@@ -35,6 +35,11 @@ https://restapi.amap.com/v3/weather/weatherInfo
 GET https://restapi.amap.com/v3/weather/weatherInfo?city=610100&extensions=all&key=78437de757a2693c3f9cb2aabf6f25fd
 ```
 
+> **⚠️ 注意**: 此 API Key 是项目内置的测试密钥，已在源代码中公开。在生产环境中，建议：
+> 1. 申请自己的高德开放平台 API Key
+> 2. 将 API Key 存储在本地配置文件或环境变量中
+> 3. 不要将个人 API Key 提交到公开仓库
+
 #### 响应格式
 
 **成功响应示例**:
